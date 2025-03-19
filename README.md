@@ -16,7 +16,7 @@ allows users to schedule, manage, and customize their meetings and events.
 
 - **Backend**: Node.js, Express.js, MongoDB, Mongoose
 - **Authentication**: JWT (JSON Web Token), bcrypt
-- **Deployment**: Render / Heroku
+- **Deployment**: Render
 - **Tools**: Nodemon, dotenv, CORS
 
 ## 📦 Installation
