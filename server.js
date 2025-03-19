@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js';
 import eventRoutes from './routes/event.js';
 import availabilityRoutes from './routes/availability.js';
 import userRoutes from './routes/user.js';
+import errorHandler from './middleware/errorMiddleware.js';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(errorHandler); 
 
 // Mount routes
 app.use('/api/auth', authRoutes);
