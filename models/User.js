@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -19,14 +19,24 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true
+    },
+    firstName: { 
+      type: String, 
+      required: true, 
+      trim: true 
+    },
+    lastName: { 
+      type: String, 
+      required: true, 
+      trim: true 
     }
   },
   { timestamps: true }
 );
 
 // Pre-save hook to hash the password before saving
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     return next();
   }
   try {
@@ -44,6 +54,6 @@ UserSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 export default User;
