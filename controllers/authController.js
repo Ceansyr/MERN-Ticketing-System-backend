@@ -4,14 +4,17 @@ import jwt from 'jsonwebtoken';
 export const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+
+    // 🔍 Check if the username or email is already taken
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use' });
+      return res.status(400).json({ message: 'Username or Email already in use' });
     }
-    // Create new user
+
+    // 🆕 Create new user
     const user = new User({ username, email, password });
     await user.save();
+
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     next(error);
