@@ -1,11 +1,20 @@
-const errorHandler = (err, res) => {
-  console.error(err.stack); // Log errors for debugging
+import fs from "fs";
 
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode).json({
-    message: err.message || "Server Error",
-    stack: process.env.NODE_ENV === "production" ? null : err.stack, // Hide stack in production
+export default function errorHandler(err, res) {
+  const date = new Date();
+  const logFile = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-error.log`;
+  const errorLog = `[${date.toISOString()}] ${err.stack || err.message}\n`;
+
+  fs.appendFile(`./logs/${logFile}`, errorLog, (writeErr) => {
+    if (writeErr) {
+      console.error("Error writing to error log: ", writeErr);
+    }
   });
-};
 
-export default errorHandler;
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message,
+      status: err.status || 500,
+    },
+  });
+}

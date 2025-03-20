@@ -2,12 +2,12 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import bodyParser from "body-parser";
 
-import authRoutes from "./routes/auth.js";
-import eventRoutes from "./routes/event.js";
-import availabilityRoutes from "./routes/availability.js";
 import userRoutes from "./routes/user.js";
+
 import errorHandler from "./middleware/errorMiddleware.js";
+import log from "./middleware/logMiddleware.js";
 
 dotenv.config();
 
@@ -22,26 +22,20 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use(errorHandler); 
+app.use(bodyParser.json());
+app.use(log);
 
 // Mount routes
-app.use("/api/auth", authRoutes);
-app.use("/api/events", eventRoutes);
-app.use("/api/availability", availabilityRoutes);
 app.use("/api/users", userRoutes);
 
-// Error handling middleware should be added last
-app.use((err, res) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!", error: err.message });
-});
-
 const PORT = process.env.PORT || 5000;
+
+mongoose.set("strictQuery", true); 
 
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000
+      serverSelectionTimeoutMS: 20000
     });
     console.log("✅ MongoDB Connected Successfully!");
     app.listen(PORT, () =>
@@ -53,3 +47,9 @@ const startServer = async () => {
 };
 
 startServer();
+
+app.use(errorHandler); 
+
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});

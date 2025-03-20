@@ -1,42 +1,43 @@
 import express from "express";
-import authMiddleware from "../middleware/authMiddleware.js";
-import User from "../models/User.js";
-import { getCurrentUser } from "../controllers/userController.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
+import User from "../models/User.js";
+import errorHandler from "../middleware/errorMiddleware.js";
+
+dotenv.config();
 
 const router = express.Router();
 
-// Define your user-related routes here
-router.get("/", (req, res) => {
-  res.send("Get all users");
-});
-
-router.post("/", (req, res) => {
-  res.send("Create a new user");
-});
-
-router.get("/:id", (req, res) => {
-  res.send(`Get user with ID: ${req.params.id}`);
-});
-
-router.put("/:id", (req, res) => {
-  res.send(`Update user with ID: ${req.params.id}`);
-});
-
-router.delete("/:id", (req, res) => {
-  res.send(`Delete user with ID: ${req.params.id}`);
-});
-
-router.get("/current", authMiddleware, getCurrentUser, async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
-    // `req.user` is set by the authMiddleware
-    const user = await User.findById(req.user.id).select("-password"); // Exclude password
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const { firstName, lastName, email, password } = req.body;
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+      res.status(400);
+      throw new Error("User already exists");
+    } else {
+      const user = await User.create({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password, // Password hashing will be handled in the User model
+      });
+
+      res.status(201).json({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "60d",
+        }),
+      });
     }
-    res.json(user);
-  } catch (error){
-    res.status(500).json({ message: error.message || "Server error" });
+  } catch (err) {
+    errorHandler(err, req, res);
   }
 });
 
