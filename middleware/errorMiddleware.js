@@ -1,6 +1,6 @@
 import fs from "fs";
 
-export default function errorHandler(err, res) {
+export default function errorHandler(err, req, res, next) {
   const date = new Date();
   const logFile = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-error.log`;
   const errorLog = `[${date.toISOString()}] ${err.stack || err.message}\n`;
@@ -8,6 +8,7 @@ export default function errorHandler(err, res) {
   fs.appendFile(`./logs/${logFile}`, errorLog, (writeErr) => {
     if (writeErr) {
       console.error("Error writing to error log: ", writeErr);
+      next();
     }
   });
 
@@ -15,6 +16,6 @@ export default function errorHandler(err, res) {
     error: {
       message: err.message,
       status: err.status || 500,
-    },
+    },  
   });
 }

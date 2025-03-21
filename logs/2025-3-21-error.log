@@ -1,0 +1,26 @@
+[2025-03-21T04:41:03.952Z] ValidationError: User validation failed: username: Path `username` is required.
+    at Document.invalidate (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongoose\lib\document.js:3329:32)
+    at C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongoose\lib\document.js:3090:17
+    at C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongoose\lib\schemaType.js:1407:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-03-21T09:30:44.366Z] MongoServerError: E11000 duplicate key error collection: test.users index: username_1 dup key: { username: null }
+    at InsertOneOperation.execute (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\insert.js:51:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async tryOperation (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async Collection.insertOne (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\collection.js:157:16)
+[2025-03-21T09:37:17.714Z] MongoServerError: E11000 duplicate key error collection: test.users index: username_1 dup key: { username: null }
+    at InsertOneOperation.execute (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\insert.js:51:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async tryOperation (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async Collection.insertOne (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\collection.js:157:16)
+[2025-03-21T09:39:53.556Z] MongoServerError: E11000 duplicate key error collection: test.users index: username_1 dup key: { username: null }
+    at InsertOneOperation.execute (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\insert.js:51:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async tryOperation (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async Collection.insertOne (C:\Users\Admin\Projects\Final evalluation\backend\node_modules\mongodb\lib\collection.js:157:16)
+[2025-03-21T10:04:27.279Z] Error: User already exists
+    at file:///C:/Users/Admin/Projects/Final%20evalluation/backend/routes/user.js:20:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

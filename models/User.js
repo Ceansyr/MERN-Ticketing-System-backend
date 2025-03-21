@@ -5,9 +5,12 @@ const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
       unique: true,
-      trim: true
+      sparse: true,
+      trim: true,
+      required: function () {
+        return this.email ? false : true; 
+      }
     },
     email: {
       type: String,

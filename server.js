@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(log);
 
 // Mount routes
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 
