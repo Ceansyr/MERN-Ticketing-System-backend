@@ -32,7 +32,15 @@ const UserSchema = new mongoose.Schema(
       type: String, 
       required: true, 
       trim: true 
-    }
+    },
+    preference: {
+      type: String, 
+      enum: ["Sales", "Finance", "Marketing", "Consulting", "Tech", "Education", "Government & Politics", "Recruiting"],
+      required: function () {
+        return this.email ? false : true; 
+      }, 
+      trim: true,
+    },
   },
   { timestamps: true }
 );

@@ -3,7 +3,12 @@ import User from "../models/User.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; // ✅ Support cookies & headers
+
+    console.log("Cookies:", req.cookies); // Debug cookies
+    console.log("Authorization Header:", req.headers.authorization); // Debug header
+    
+    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1]; // ✅ Support cookies & headers
+    console.log("Token received:", token);
 
     if (!token) {
       res.status(401);
