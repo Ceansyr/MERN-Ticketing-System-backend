@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import userRoutes from "./routes/user.js";
+import eventRoutes from "./routes/event.js";
 
 import errorHandler from "./middleware/errorMiddleware.js";
 import log from "./middleware/logMiddleware.js";
@@ -29,6 +30,7 @@ app.use(log);
 
 // Mount routes
 app.use("/api/user", userRoutes);
+app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT || 5000;
 
