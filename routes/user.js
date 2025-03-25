@@ -78,5 +78,35 @@ router.post("/preference", authMiddleware, async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ username });
+
+    if (user && (await user.matchPassword(password))) {
+
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "60d",
+      });
+
+      res.json({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        username: user.username,
+        preference: user.preference,
+        token,
+      });
+    } else {
+      res.status(401);
+      throw new Error("Invalid username or password");
+    }
+  } catch (err) {
+    errorHandler(err, req, res);
+  }
+});
+
 
 export default router;
