@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 
 import Event from "../models/event.js";
 import errorHandler from "../middleware/errorMiddleware.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 dotenv.config();
 
