@@ -8,19 +8,50 @@ dotenv.config();
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const events = await Event.find({});
+    const userId = req.user._id;
+    const events = await Event.find({
+      $or: [{ createdBy: userId }, { participants: userId }],
+    });
     res.json(events);
   } catch (error) {
     errorHandler(error, req, res);
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { title, date, time, status, isActive } = req.body;
-    const newEvent = new Event({ title, date, time, status, isActive });
+    const userId = req.user._id;
+    const {
+      title,
+      description,
+      date,
+      time,
+      bannerImage,
+      backgroundColor,
+      eventLink,
+      password,
+      participants,
+      status,
+      isActive,
+    } = req.body;
+    
+    const newEvent = new Event({
+      title,
+      description,
+      date,
+      time,
+      bannerImage,
+      backgroundColor,
+      eventLink,
+      password,
+      participants, 
+      status,
+      isActive,
+      createdBy: userId,
+    });
+    
     await newEvent.save();
     res.status(201).json(newEvent);
   } catch (error) {
@@ -28,7 +59,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const updatedEvent = await Event.findByIdAndUpdate(id, req.body, { new: true });
@@ -37,11 +68,11 @@ router.put("/:id", async (req, res) => {
     }
     res.json(updatedEvent);
   } catch (error) {
-    errorHandler(error, req, res);
+    res.status(400).json({ message: "Failed to update event", error: error.message });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedEvent = await Event.findByIdAndDelete(id);
@@ -54,10 +85,11 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id/toggle", async (req, res) => {
+
+router.put("/:id/toggle", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { isActive } = req.body; // Frontend sends the desired state
+    const { isActive } = req.body;
     const event = await Event.findById(id);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });

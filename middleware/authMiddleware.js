@@ -3,12 +3,7 @@ import User from "../models/User.js";
 
 const authMiddleware = async (req, res, next) => {
   try {
-
-    console.log("Cookies:", req.cookies); // Debug cookies
-    console.log("Authorization Header:", req.headers.authorization); // Debug header
-    
-    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1]; // ✅ Support cookies & headers
-    console.log("Token received:", token);
+    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       res.status(401);
@@ -16,7 +11,14 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select("-password"); // ✅ Attach user to request
+    
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
+
+    req.user = user;
 
     next();
   } catch (error) {
