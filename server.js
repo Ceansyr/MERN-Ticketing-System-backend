@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 
 import userRoutes from "./routes/user.js";
 import eventRoutes from "./routes/event.js";
+import availabilityRoutes from "./routes/availability.js";
 
 import errorHandler from "./middleware/errorMiddleware.js";
 import log from "./middleware/logMiddleware.js";
@@ -31,6 +32,7 @@ app.use(log);
 // Mount routes
 app.use("/api/user", userRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/availability", availabilityRoutes);
 
 const PORT = process.env.PORT || 5000;
 
