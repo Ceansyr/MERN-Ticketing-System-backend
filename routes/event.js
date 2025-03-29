@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 
-import Event from "../models/event.js";
+import Event from "../models/Event.js";
 import errorHandler from "../middleware/errorMiddleware.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -11,10 +11,22 @@ const router = express.Router();
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
+    const { category } = req.query;
+    let filter = {};
+
+    if (category) {
+      if (category === "past") {
+        filter.status = "past";
+        filter.date = { $lt: new Date() };
+      } else if (["upcoming", "pending", "canceled"].includes(category)) {
+        filter.status = category;
+      }
+    }
+
     const userId = req.user._id;
     const events = await Event.find({
       $or: [{ createdBy: userId }, { participants: userId }],
-    });
+    }, filter).populate("participants", "username email").populate("createdBy", "username email");  
     res.json(events);
   } catch (error) {
     errorHandler(error, req, res);
@@ -28,6 +40,7 @@ router.post("/", authMiddleware, async (req, res) => {
       title,
       description,
       date,
+      duration,
       time,
       bannerImage,
       backgroundColor,
@@ -42,6 +55,7 @@ router.post("/", authMiddleware, async (req, res) => {
       title,
       description,
       date,
+      duration,
       time,
       bannerImage,
       backgroundColor,

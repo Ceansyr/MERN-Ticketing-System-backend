@@ -29,10 +29,16 @@ const eventSchema = new mongoose.Schema(
     password: { 
       type: String 
     },
-    participants: [{ 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "User" 
-    }],
+    duration: { 
+      type: String,
+    },
+    participants: { 
+      type: [mongoose.Schema.Types.ObjectId], 
+      ref: "User",
+    },
+    hostName: { 
+      type: String, 
+    },
     createdBy: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: "User", 
@@ -40,7 +46,7 @@ const eventSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["upcoming", "pending", "canceled"],
+      enum: ["upcoming", "pending", "canceled", "past"],
       default: "upcoming",
     },
     isActive: { 
