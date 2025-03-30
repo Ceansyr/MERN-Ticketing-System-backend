@@ -22,19 +22,15 @@ router.get("/:userId", authMiddleware, async (req, res) => {
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    // req.user is set by authMiddleware
     const userId = req.user._id;
-    const { availability, timeZone } = req.body; // Expect availability: [{ day: "Monday", slots: [{ startTime, endTime }] }, ...]
+    const { availability, timeZone } = req.body;
     
-    // Check if availability record already exists for the user
     let userAvailability = await Availability.findOne({ userId });
     
     if (userAvailability) {
-      // Update existing availability record
       userAvailability.availability = availability;
       userAvailability.timeZone = timeZone || userAvailability.timeZone;
     } else {
-      // Create a new availability record
       userAvailability = new Availability({ userId, availability, timeZone });
     }
     

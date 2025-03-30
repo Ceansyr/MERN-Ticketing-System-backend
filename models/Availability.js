@@ -2,10 +2,15 @@ import mongoose from "mongoose";
 
 const availabilitySlotSchema = new mongoose.Schema(
   {
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true },
-  },
-  { _id: false }
+    startTime: { 
+      type: String, 
+      required: true 
+    },
+    endTime: { 
+      type: String, 
+      required: true 
+    },
+  }
 );
 
 const availabilitySchema = new mongoose.Schema(
@@ -33,7 +38,10 @@ const availabilitySchema = new mongoose.Schema(
         slots: [availabilitySlotSchema],
       },
     ],
-    timeZone: { type: String, default: "UTC" },
+    timeZone: { 
+      type: String, 
+      default: "UTC+5:30" 
+    },
   },
   {
     timestamps: true,

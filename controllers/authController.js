@@ -42,7 +42,7 @@ export const login = async (req, res, next) => {
 
     res.json({ token, message: "Logged in successfully" });
   } catch (error) {
-    next(error); // ✅ Pass error to middleware
+    next(error); 
   }
 };
 
