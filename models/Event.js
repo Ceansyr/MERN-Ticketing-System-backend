@@ -47,7 +47,6 @@ const eventSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["upcoming", "pending", "canceled", "past"],
-      default: "upcoming",
     },
     isActive: { 
       type: Boolean, 

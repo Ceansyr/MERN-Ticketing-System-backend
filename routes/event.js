@@ -117,5 +117,19 @@ router.put("/:id/toggle", authMiddleware, async (req, res) => {
   }
 });
 
+router.post("/update-statuses", async (req, res) => {
+  try {
+    const { events } = req.body;
+
+    for (const event of events) {
+      await Event.findByIdAndUpdate(event._id, { status: event.status });
+    }
+
+    res.status(200).json({ message: "Event statuses updated successfully" });
+  } catch (err) {
+    console.error("Error updating event statuses:", err);
+    res.status(500).json({ message: "Failed to update event statuses" });
+  }
+});
 
 export default router;
