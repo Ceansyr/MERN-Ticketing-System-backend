@@ -17,21 +17,22 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5000", "https://astonishing-smakager-a8b308.netlify.app/"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, 
+  origin: [
+    "http://localhost:5173", // Local development
+    "https://astonishing-smakager-a8b308.netlify.app", // Frontend production URL
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  credentials: true, // Allow cookies and credentials
 };
+
+// Apply CORS middleware
 app.use(cors(corsOptions));
 
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(204); 
-});
+// Handle preflight requests
+app.options("*", cors(corsOptions));
 
+// Other middlewares
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -44,12 +45,12 @@ app.use("/api/availability", availabilityRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-mongoose.set("strictQuery", true); 
+mongoose.set("strictQuery", true);
 
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 20000
+      serverSelectionTimeoutMS: 20000,
     });
     console.log("✅ MongoDB Connected Successfully!");
     app.listen(PORT, () =>
@@ -62,8 +63,10 @@ const startServer = async () => {
 
 startServer();
 
-app.use(errorHandler); 
+// Error handler middleware
+app.use(errorHandler);
 
+// Default route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
