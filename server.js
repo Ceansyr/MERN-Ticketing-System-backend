@@ -16,15 +16,13 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(express.json());
-
 const corsOptions = {
   origin: ["http://localhost:5000", "https://astonishing-smakager-a8b308.netlify.app/"],
   credentials: true, 
 };
 app.use(cors(corsOptions));
-
+app.options("*", cors(corsOptions));
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(log);
