@@ -14,34 +14,24 @@ router.post("/register", async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      res.status(400);
-      throw new Error("User already exists");
-    } else {
-      const user = await User.create({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-      });
-
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "60d",
-      });
-
-      user.token = token;
-      await user.save();
-
-      res.status(201).json({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        token: token,
-      });
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ message: "All fields are required." });
     }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists." });
+    }
+    const user = await User.create({ firstName, lastName, email, password });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "60d" });
+
+    res.status(201).json({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      token,
+    });
   } catch (err) {
     errorHandler(err, req, res);
   }
