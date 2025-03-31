@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: "https://unrivaled-cobbler-5a5a10.netlify.app/",
+  origin: ["http://localhost:5000", "https://astonishing-smakager-a8b308.netlify.app"],
   credentials: true, 
 };
 app.use(cors(corsOptions));
