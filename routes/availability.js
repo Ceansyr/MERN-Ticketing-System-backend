@@ -1,6 +1,6 @@
 import express from "express";
 import { AvailabilityController } from "../controllers/availabilityController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import { authMiddleware } from "../middleware/index.js";
 
 const router = express.Router();
 

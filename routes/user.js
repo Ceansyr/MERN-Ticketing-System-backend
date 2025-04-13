@@ -3,8 +3,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 import User from "../models/User.js";
-import errorHandler from "../middleware/errorMiddleware.js";
-import authMiddleware from "../middleware/authMiddleware.js";
+import { errorHandler, authMiddleware } from "../middleware/index.js";
 
 dotenv.config();
 
@@ -134,5 +133,7 @@ router.put("/update", authMiddleware, async (req, res) => {
     errorHandler(error, req, res);
   }
 });
+
+export const userRouter = router;
 
 export default router;

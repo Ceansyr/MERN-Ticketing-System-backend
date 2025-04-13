@@ -6,8 +6,7 @@ import { corsOptions, corsMiddleware } from "./config/cors.js";
 import { userRouter } from "./routes/user.js";
 import { eventRouter } from "./routes/event.js";
 import { availabilityRouter } from "./routes/availability.js";
-import { errorHandler } from "./middleware/errorMiddleware.js";
-import { log } from "./middleware/logMiddleware.js";
+import { errorHandler, logMiddleware } from "./middleware/index.js";
 
 const app = express();
 
@@ -18,7 +17,7 @@ app.use(corsMiddleware);
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(log);
+app.use(logMiddleware);
 
 // Routes
 app.use("/api/user", userRouter);
