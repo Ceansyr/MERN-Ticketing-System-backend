@@ -1,63 +1,9 @@
 import mongoose from "mongoose";
+import { eventSchema } from "./schemas/eventSchema.js";
+import { eventMethods, eventStatics } from "./methods/eventMethods.js";
 
-const eventSchema = new mongoose.Schema(
-  {
-    title: { 
-      type: String, 
-      required: true 
-    },
-    description: { 
-      type: String 
-    },
-    date: { 
-      type: Date, 
-      required: true 
-    },
-    time: { 
-      type: String, 
-      required: true 
-    },
-    bannerImage: { 
-      type: String 
-    },
-    backgroundColor: { 
-      type: String 
-    },
-    eventLink: { 
-      type: String 
-    },
-    password: { 
-      type: String 
-    },
-    duration: { 
-      type: String,
-    },
-    participants: { 
-      type: [mongoose.Schema.Types.ObjectId], 
-      ref: "User",
-    },
-    hostName: { 
-      type: String, 
-    },
-    createdBy: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "User", 
-      required: true 
-    },
-    status: {
-      type: String,
-      enum: ["upcoming", "pending", "canceled", "past"],
-    },
-    isActive: { 
-      type: Boolean, 
-      default: true 
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+eventSchema.methods = eventMethods;
+eventSchema.statics = eventStatics;
 
 const Event = mongoose.model("Event", eventSchema);
-
 export default Event;
