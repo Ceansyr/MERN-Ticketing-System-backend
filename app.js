@@ -3,9 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { corsOptions, corsMiddleware } from "./config/cors.js";
-import { userRouter } from "./routes/user.js";
-import { eventRouter } from "./routes/event.js";
-import { availabilityRouter } from "./routes/availability.js";
+import apiRoutes from "./routes/index.js";
 import { errorHandler, logMiddleware } from "./middleware/index.js";
 
 const app = express();
@@ -20,9 +18,7 @@ app.use(cookieParser());
 app.use(logMiddleware);
 
 // Routes
-app.use("/api/user", userRouter);
-app.use("/api/events", eventRouter);
-app.use("/api/availability", availabilityRouter);
+app.use("/api", apiRoutes);
 
 // Error handling
 app.use(errorHandler);

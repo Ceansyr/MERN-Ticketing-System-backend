@@ -12,7 +12,7 @@ export const userMethods = {
   }
 };
 
-export const userVirtuals = (schema) => {
+export const userVirtual = (schema) => {
   schema.virtual("fullName").get(function() {
     return `${this.firstName} ${this.lastName}`;
   });

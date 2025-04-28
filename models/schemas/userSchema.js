@@ -31,12 +31,21 @@ export const userSchema = new mongoose.Schema({
   },
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
-  preference: {
+  role: {
     type: String,
-    enum: ["Sales", "Finance", "Marketing", "Consulting", "Tech", "Education", "Government & Politics", "Recruiting"],
-    required: function() {
-      return !this.email;
-    },
+    enum: ["admin", "member"],
+    default: "member"
+  },
+  adminId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
+  phone: {
+    type: String,
     trim: true
+  },
+  profilePicture: {
+    type: String
   }
 }, baseSchemaOptions);
