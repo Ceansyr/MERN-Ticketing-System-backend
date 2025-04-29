@@ -110,5 +110,18 @@ export const TicketService = {
     
     if (!ticket) throw new Error("Ticket not found");
     return ticket;
+  },
+
+  getTicketCount: async () => {
+    try {
+      const count = await Ticket.countDocuments();
+      return count;
+    } catch (error) {
+      console.error("Error getting ticket count:", error);
+      return 0;
+    }
   }
 };
+
+
+

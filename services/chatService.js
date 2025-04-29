@@ -17,7 +17,10 @@ export const ChatService = {
     const chat = new Chat({
       ticketId,
       sender,
-      message
+      message,
+      isGuest: false,
+      isRead: false,
+      timestamp: new Date()
     });
     
     return chat.save();

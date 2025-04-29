@@ -4,11 +4,12 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// All routes require authentication
-router.use(authMiddleware);
+// Routes that require authentication
+router.post("/message", authMiddleware, ChatbotController.processMessage);
+router.post("/ticket", authMiddleware, ChatbotController.createTicket);
 
-// Chatbot routes
-router.post("/message", ChatbotController.processMessage);
-router.post("/ticket", ChatbotController.createTicket);
+// Public routes for guest users
+router.post("/guest", ChatbotController.createGuestUser);
+router.post("/guest/ticket", ChatbotController.createGuestTicket);
 
-export default router;
+export default router; 

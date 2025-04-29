@@ -10,7 +10,7 @@ export const chatSchema = new mongoose.Schema({
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: function() { return !this.isGuest; }
   },
   message: {
     type: String,
@@ -28,5 +28,15 @@ export const chatSchema = new mongoose.Schema({
   isMissed: {
     type: Boolean,
     default: false
+  },
+  // New fields for guest users
+  isGuest: {
+    type: Boolean,
+    default: false
+  },
+  guestInfo: {
+    name: String,
+    email: String,
+    phone: String
   }
 }, baseSchemaOptions);

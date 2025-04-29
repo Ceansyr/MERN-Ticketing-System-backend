@@ -49,6 +49,17 @@ export const ticketSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  // New field for guest information
+  guestInfo: {
+    name: String,
+    email: String,
+    phone: String
+  },
+  source: {
+    type: String,
+    enum: ["web", "email", "phone", "chat_widget", "automated_chat"],
+    default: "web"
   }
 }, baseSchemaOptions);
 

@@ -1,4 +1,6 @@
 import Ticket from "../models/Ticket.js";
+import User from "../models/User.js";
+import Chat from "../models/Chat.js";
 
 export const ChatbotService = {
   processMessage: async (userId, message) => {
@@ -80,5 +82,25 @@ export const ChatbotService = {
       message: "Ticket created successfully. Our team will review and respond to your ticket soon.",
       automated: true
     };
+  },
+  
+  // New method to find an available admin
+  findAvailableAdmin: async () => {
+    // Find an admin user to assign the ticket to
+    const admin = await User.findOne({ role: "admin" }).sort({ _id: 1 });
+    return admin;
+  },
+  
+  // Save guest chat message
+  saveGuestChatMessage: async (ticketId, message, guestInfo) => {
+    const chatMessage = new Chat({
+      ticketId,
+      message: message,
+      guestInfo: guestInfo,
+      isGuest: true,
+      timestamp: new Date()
+    });
+    
+    return chatMessage.save();
   }
 };
