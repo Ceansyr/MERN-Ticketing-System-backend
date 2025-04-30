@@ -1,6 +1,7 @@
 import Ticket from "../models/Ticket.js";
 import User from "../models/User.js";
 import Chat from "../models/Chat.js";
+import ChatbotSettings from "../models/ChatbotSettings.js";
 
 export const ChatbotService = {
   processMessage: async (userId, message) => {
@@ -102,5 +103,57 @@ export const ChatbotService = {
     });
     
     return chatMessage.save();
-  }
+  },
+
+    
+  getSettings: async (userId) => {
+    try {
+      // Find settings for the user, or create default settings if none exist
+      let settings = await ChatbotSettings.findOne({ userId });
+      
+      if (!settings) {
+        // Return default settings if none exist
+        return {
+          headerColor: "#334758",
+          backgroundColor: "#FFFFFF",
+          welcomeMessages: [
+            "How can I help you?",
+            "Ask me anything!"
+          ],
+          missedChatTimer: {
+            minutes: 12,
+            seconds: 0
+          },
+          introductionForm: {
+            enabled: true,
+            nameField: true,
+            phoneField: true,
+            emailField: true,
+            buttonText: "Thank You!"
+          }
+        };
+      }
+      
+      return settings;
+    } catch (error) {
+      throw new Error(`Error getting chatbot settings: ${error.message}`);
+    }
+  },
+
+  updateSettings: async (userId, settingsData) => {
+    try {
+      // Find and update settings, or create if they don't exist
+      const settings = await ChatbotSettings.findOneAndUpdate(
+        { userId },
+        { ...settingsData, userId },
+        { new: true, upsert: true }
+      );
+      
+      return settings;
+    } catch (error) {
+      throw new Error(`Error updating chatbot settings: ${error.message}`);
+    }
+  },
 };
+
+// Add these methods to the ChatbotService object

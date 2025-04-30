@@ -17,6 +17,11 @@ const paginateResults = async (query, page = 1, limit = 10) => {
 
 export const TicketService = {
   getTickets: async (filter = {}, page = 1, limit = 10) => {
+    // By default, only show active tickets unless specifically requested
+    if (!filter.status) {
+      filter.isActive = true;
+    }
+    
     const query = Ticket.find(filter);
     const tickets = await paginateResults(query, page, limit);
     const total = await Ticket.countDocuments(filter);
@@ -102,9 +107,19 @@ export const TicketService = {
   },
 
   updateStatus: async (id, status) => {
+    const updateData = { status, updatedAt: Date.now() };
+    
+    // If status is resolved or closed, add additional metadata
+    if (status === "resolved" || status === "closed") {
+      updateData.resolvedAt = Date.now();
+      updateData.isActive = false; // Mark as inactive to exclude from default queries
+    } else {
+      updateData.isActive = true;
+    }
+    
     const ticket = await Ticket.findByIdAndUpdate(
       id,
-      { status, updatedAt: Date.now() },
+      updateData,
       { new: true }
     );
     

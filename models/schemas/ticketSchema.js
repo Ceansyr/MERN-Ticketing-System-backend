@@ -60,7 +60,14 @@ export const ticketSchema = new mongoose.Schema({
     type: String,
     enum: ["web", "email", "phone", "chat_widget", "automated_chat"],
     default: "web"
-  }
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  resolvedAt: {
+    type: Date
+  },
 }, baseSchemaOptions);
 
 // Generate a unique ticket ID before saving

@@ -3,7 +3,7 @@ import { ChatService } from "../services/chatService.js";
 
 export const TicketController = {
   getTickets: async (req, res, next) => {
-    const { page = 1, limit = 10, status, priority, assignee } = req.query;
+    const { page = 1, limit = 10, status, priority, assignee, source } = req.query;
 
     let filter = {};
     if (req.user.role === "admin") {
@@ -14,9 +14,15 @@ export const TicketController = {
       filter.reporter._id = req.user._id;
     }
 
-    if (status) filter.status = status;
+    // Handle comma-separated status values
+    if (status) {
+      const statusArray = status.split(",");
+      filter.status = { $in: statusArray };
+    }
+    
     if (priority) filter.priority = priority;
     if (assignee) filter.assignee = assignee;
+    if (source) filter.source = source;
 
     try {
       const result = await TicketService.getTickets(filter, parseInt(page), parseInt(limit));

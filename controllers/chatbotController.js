@@ -105,5 +105,67 @@ export const ChatbotController = {
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
-  }
+  },
+  getSettings: async (req, res) => {
+    try {
+      // Get settings for the current user/admin
+      const settings = await ChatbotService.getSettings(req.user._id);
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  updateSettings: async (req, res) => {
+    try {
+      const settings = req.body;
+      
+      if (!settings) {
+        return res.status(400).json({ message: "Settings data is required" });
+      }
+      
+      const updatedSettings = await ChatbotService.updateSettings(req.user._id, settings);
+      res.json(updatedSettings);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  },
+  getPublicSettings: async (req, res) => {
+    try {
+      // Get the first admin's settings or default settings
+      const admin = await ChatbotService.findAvailableAdmin();
+      let settings;
+      
+      if (admin) {
+        settings = await ChatbotService.getSettings(admin._id);
+      } else {
+        // Return default settings if no admin is found
+        settings = {
+          headerColor: "#334758",
+          backgroundColor: "#FFFFFF",
+          welcomeMessages: [
+            "How can I help you?",
+            "Ask me anything!"
+          ],
+          missedChatTimer: {
+            minutes: 12,
+            seconds: 0
+          },
+          introductionForm: {
+            enabled: true,
+            nameField: true,
+            phoneField: true,
+            emailField: true,
+            buttonText: "Thank You!"
+          }
+        };
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
 };
+
+
