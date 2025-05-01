@@ -20,7 +20,7 @@ const chatbotSettingsSchema = new mongoose.Schema({
   missedChatTimer: {
     minutes: {
       type: Number,
-      default: 12
+      default: 20
     },
     seconds: {
       type: Number,

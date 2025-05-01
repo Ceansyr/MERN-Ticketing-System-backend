@@ -5,15 +5,16 @@ import teamRoutes from "./team.js";
 import analyticsRoutes from "./analytics.js";
 import chatbotRoutes from "./chatbot.js";
 import userRoutes from "./user.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// API routes
 router.use("/auth", authRoutes);
-router.use("/tickets", ticketRoutes);
-router.use("/team", teamRoutes);
-router.use("/analytics", analyticsRoutes);
-router.use("/chatbot", chatbotRoutes);
-router.use("/user", userRoutes);
+
+router.use("/tickets", authMiddleware, ticketRoutes);
+router.use("/team", authMiddleware, teamRoutes);
+router.use("/analytics", authMiddleware, analyticsRoutes);
+router.use("/chatbot", authMiddleware, chatbotRoutes);
+router.use("/user", authMiddleware, userRoutes);
 
 export default router;

@@ -7,7 +7,6 @@ export const LogService = {
     const errorLog = `[${date.toISOString()}] ${error.stack || error.message}\n`;
 
     try {
-      // Ensure logs directory exists
       const logDir = "./logs";
       if (!fs.existsSync(logDir)) {
         await fs.promises.mkdir(logDir, { recursive: true });

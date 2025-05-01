@@ -29,7 +29,6 @@ export const chatSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  // New fields for guest users
   isGuest: {
     type: Boolean,
     default: false

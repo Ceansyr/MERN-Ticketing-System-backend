@@ -14,7 +14,6 @@ export const TicketController = {
       filter.reporter._id = req.user._id;
     }
 
-    // Handle comma-separated status values
     if (status) {
       const statusArray = status.split(",");
       filter.status = { $in: statusArray };
@@ -181,10 +180,8 @@ export const TicketController = {
         return res.status(400).json({ message: "Reply message is required" });
       }
       
-      // Get the ticket to check access permissions
       const ticket = await TicketService.getTicketById(id);
       
-      // Check if user has access to this ticket
       if (
         (req.user.role === "admin" && ticket.adminId.toString() !== req.user._id.toString()) ||
         (req.user.role === "member" && ticket.adminId.toString() !== req.user.adminId.toString())
@@ -192,10 +189,8 @@ export const TicketController = {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      // Create the reply message
       const reply = await ChatService.createMessage(id, req.user._id, message);
       
-      // Update the ticket's updatedAt timestamp
       await TicketService.updateTicket(id, { updatedAt: Date.now() });
       
       res.status(201).json({
@@ -212,15 +207,13 @@ export const TicketController = {
     try {
       const ticket = await TicketService.getTicketById(req.params.id);
   
-      // Check access permissions
       if (
         (req.user.role === "admin" && ticket.adminId.toString() !== req.user._id.toString()) ||
         (req.user.role === "member" && ticket.adminId.toString() !== req.user.adminId.toString())
       ) {
         return res.status(403).json({ message: "Access denied" });
       }
-  
-      // Get messages for this ticket
+
       const messages = await ChatService.getTicketChats(req.params.id);
       res.json(messages);
     } catch (error) {
@@ -228,6 +221,4 @@ export const TicketController = {
     }
   }
 };
-
-// Add this method to your TicketController
 

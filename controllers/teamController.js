@@ -1,103 +1,124 @@
 import { TeamService } from "../services/teamService.js";
 
 export const TeamController = {
-  getTeamMembers: async (req, res) => {
+  getTeamMembers: async (req, res, next) => {
     try {
-      // Only admin can view team members
-      const adminId = req.user.role === "admin" ? req.user._id : req.user.adminId;
-      
-      if (!adminId) {
-        return res.status(403).json({ message: "Access denied" });
-      }
+      const adminId = req.user.role === "Admin" ? req.user._id : req.user.adminId;
       
       const members = await TeamService.getTeamMembers(adminId);
-      res.json(members);
+      res.json({ members });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
-  
-  inviteTeamMember: async (req, res) => {
+
+  inviteTeamMember: async (req, res, next) => {
     try {
-      // Only admin can invite team members
       if (req.user.role !== "admin") {
-        return res.status(403).json({ message: "Access denied" });
+        return res.status(403).json({ message: "Only admins can invite team members" });
       }
-      
-      const { email } = req.body;
-      
+
+      const { email, firstName, lastName, role } = req.body;
+
       if (!email) {
         return res.status(400).json({ message: "Email is required" });
       }
-      
-      const invitation = await TeamService.inviteTeamMember(req.user._id, email);
+
+      const invitation = await TeamService.inviteTeamMember(req.user._id, email, firstName, lastName, role || "Member");
       res.status(201).json(invitation);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   },
-  
-  removeTeamMember: async (req, res) => {
+
+  updateTeamMember: async (req, res, next) => {
     try {
-      // Only admin can remove team members
       if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Only admins can update team members" });
+      }
+
+      const member = await TeamService.getTeamMemberById(req.params.id);
+
+      if (member.adminId.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: "Access denied" });
       }
-      
-      const { memberId } = req.params;
-      
-      if (!memberId) {
-        return res.status(400).json({ message: "Member ID is required" });
-      }
-      
-      const result = await TeamService.removeTeamMember(req.user._id, memberId);
-      res.json({ message: "Team member removed successfully", user: result });
+
+      const updatedMember = await TeamService.updateTeamMember(req.params.id, req.body);
+      res.json(updatedMember);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
+    }
+  },
+
+  removeTeamMember: async (req, res, next) => {
+    try {
+      if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Only admins can remove team members" });
+      }
+
+      const member = await TeamService.getTeamMemberById(req.params.memberId);
+
+      if (member.adminId.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await TeamService.deleteTeamMember(req.params.memberId);
+      res.json({ message: "Team member removed successfully" });
+    } catch (error) {
+      next(error);
     }
   },
   
-  getPendingInvitations: async (req, res) => {
+  getPendingInvitations: async (req, res, next) => {
     try {
-      // Only admin can view pending invitations
       if (req.user.role !== "admin") {
         return res.status(403).json({ message: "Access denied" });
       }
       
       const invitations = await TeamService.getPendingInvitations(req.user._id);
-      res.json(invitations);
+      res.json({ invitations });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
   
-  checkInvitation: async (req, res) => {
+  checkInvitation: async (req, res, next) => {
     try {
       const { email } = req.params;
-      
-      if (!email) {
-        return res.status(400).json({ message: "Email is required" });
-      }
-      
       const invitation = await TeamService.checkInvitation(email);
-      res.json(invitation || { exists: false });
+      res.json({ invitation });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
   
-  acceptInvitation: async (req, res) => {
+  acceptInvitation: async (req, res, next) => {
     try {
       const { invitationId } = req.params;
+      const { firstName, lastName, password } = req.body;
       
-      if (!invitationId) {
-        return res.status(400).json({ message: "Invitation ID is required" });
+      if (!firstName || !lastName || !password) {
+        return res.status(400).json({ message: "First name, last name, and password are required" });
       }
       
-      const result = await TeamService.acceptInvitation(invitationId, req.user._id);
-      res.json(result);
+      const user = await TeamService.acceptInvitation(invitationId, {
+        firstName,
+        lastName,
+        password
+      });
+      
+      res.status(201).json({
+        message: "Invitation accepted successfully",
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role
+        }
+      });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 };

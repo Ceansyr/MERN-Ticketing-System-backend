@@ -8,7 +8,6 @@ import { errorHandler, logMiddleware } from "./middleware/index.js";
 
 const app = express();
 
-// Middleware
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 app.use(corsMiddleware);
@@ -17,13 +16,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(logMiddleware);
 
-// Routes
 app.use("/api", apiRoutes);
 
-// Error handling
 app.use(errorHandler);
 
-// Health check route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });

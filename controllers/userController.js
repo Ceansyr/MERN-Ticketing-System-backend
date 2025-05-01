@@ -96,5 +96,38 @@ export const UserController = {
     } catch (error) {
       next(error);
     }
+  },
+  
+  updateUserProfile: async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+      const { firstName, lastName, email, phone, password } = req.body;
+  
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      if (email) user.email = email;
+      if (phone) user.phone = phone;
+      if (password) user.password = password;
+  
+      const updatedUser = await user.save();
+  
+      const userResponse = {
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        role: updatedUser.role
+      };
+  
+      res.json({ message: "Profile updated successfully", user: userResponse });
+    } catch (error) {
+      next(error);
+    }
   }
 };

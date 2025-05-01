@@ -5,10 +5,8 @@ import ChatbotSettings from "../models/ChatbotSettings.js";
 
 export const ChatbotService = {
   processMessage: async (userId, message) => {
-    // Simple keyword-based responses with response delay simulation
     const lowerMessage = message.toLowerCase();
     
-    // Add timestamp to track when the message was processed
     const processedAt = new Date();
     
     let response = {
@@ -17,14 +15,12 @@ export const ChatbotService = {
       automated: true
     };
     
-    // Check for ticket creation intent
     if (lowerMessage.includes("create ticket") || lowerMessage.includes("new ticket") || lowerMessage.includes("submit ticket")) {
       response.intent = "createTicket";
       response.message = "I can help you create a ticket. Please provide a title and description.";
       return response;
     }
     
-    // Check for ticket status intent
     if (lowerMessage.includes("ticket status") || lowerMessage.includes("my tickets")) {
       const recentTickets = await Ticket.find({ reporter: userId })
         .sort({ createdAt: -1 })
@@ -42,7 +38,6 @@ export const ChatbotService = {
       return response;
     }
     
-    // Check for help intent
     if (lowerMessage.includes("help") || lowerMessage.includes("support") || lowerMessage.includes("assistance")) {
       response.message = "I can help you with the following:\n" +
         "- Creating a new ticket\n" +
@@ -52,7 +47,6 @@ export const ChatbotService = {
       return response;
     }
     
-    // Default response
     response.message = "I'm an automated response system. I can help you create tickets or check their status. " +
       "For real-time assistance, please create a ticket and our team will respond as soon as possible.";
     return response;
@@ -85,14 +79,11 @@ export const ChatbotService = {
     };
   },
   
-  // New method to find an available admin
   findAvailableAdmin: async () => {
-    // Find an admin user to assign the ticket to
     const admin = await User.findOne({ role: "admin" }).sort({ _id: 1 });
     return admin;
   },
   
-  // Save guest chat message
   saveGuestChatMessage: async (ticketId, message, guestInfo) => {
     const chatMessage = new Chat({
       ticketId,
@@ -104,15 +95,12 @@ export const ChatbotService = {
     
     return chatMessage.save();
   },
-
     
   getSettings: async (userId) => {
     try {
-      // Find settings for the user, or create default settings if none exist
       let settings = await ChatbotSettings.findOne({ userId });
       
       if (!settings) {
-        // Return default settings if none exist
         return {
           headerColor: "#334758",
           backgroundColor: "#FFFFFF",
@@ -142,7 +130,6 @@ export const ChatbotService = {
 
   updateSettings: async (userId, settingsData) => {
     try {
-      // Find and update settings, or create if they don't exist
       const settings = await ChatbotSettings.findOneAndUpdate(
         { userId },
         { ...settingsData, userId },
@@ -155,5 +142,3 @@ export const ChatbotService = {
     }
   },
 };
-
-// Add these methods to the ChatbotService object

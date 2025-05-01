@@ -50,7 +50,6 @@ export const ticketSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  // New field for guest information
   guestInfo: {
     name: String,
     email: String,
@@ -70,7 +69,6 @@ export const ticketSchema = new mongoose.Schema({
   },
 }, baseSchemaOptions);
 
-// Generate a unique ticket ID before saving
 ticketSchema.pre("save", async function(next) {
   if (this.isNew) {
     const year = new Date().getFullYear();

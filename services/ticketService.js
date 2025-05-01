@@ -2,7 +2,6 @@ import Ticket from "../models/Ticket.js";
 
 const USER_POPULATE_FIELDS = "firstName lastName email profilePicture";
 
-// Shared pagination helper
 const paginateResults = async (query, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
   const results = await query
@@ -17,7 +16,6 @@ const paginateResults = async (query, page = 1, limit = 10) => {
 
 export const TicketService = {
   getTickets: async (filter = {}, page = 1, limit = 10) => {
-    // By default, only show active tickets unless specifically requested
     if (!filter.status) {
       filter.isActive = true;
     }
@@ -109,10 +107,9 @@ export const TicketService = {
   updateStatus: async (id, status) => {
     const updateData = { status, updatedAt: Date.now() };
     
-    // If status is resolved or closed, add additional metadata
     if (status === "resolved" || status === "closed") {
       updateData.resolvedAt = Date.now();
-      updateData.isActive = false; // Mark as inactive to exclude from default queries
+      updateData.isActive = false;
     } else {
       updateData.isActive = true;
     }

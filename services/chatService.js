@@ -31,7 +31,6 @@ export const ChatService = {
   },
 
   markAsMissed: async (ticketId, threshold = 15) => {
-    // Find the first unread message from customer
     const firstUnreadMessage = await Chat.findOne({
       ticketId,
       isRead: false
@@ -39,13 +38,11 @@ export const ChatService = {
     
     if (!firstUnreadMessage) return null;
     
-    // Check if it's been more than threshold minutes
     const now = new Date();
     const messageTime = new Date(firstUnreadMessage.timestamp);
     const diffMinutes = (now - messageTime) / (1000 * 60);
     
     if (diffMinutes > threshold) {
-      // Mark all unread messages as missed
       await Chat.updateMany(
         { ticketId, isRead: false },
         { isMissed: true }

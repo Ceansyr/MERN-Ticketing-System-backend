@@ -3,21 +3,27 @@ import jwt from "jsonwebtoken";
 
 export const AuthController = {
   login: async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, isInvitation } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
     try {
-      const user = await AuthService.authenticateUser(email, password);
+      let user;
+      
+      if (isInvitation) {
+        user = await AuthService.authenticateInvitation(email, password);
+      } else {
+        user = await AuthService.authenticateUser(email, password);
+      }
+      
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "60d" });
 
-      // Set HTTP-only cookie
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 24 * 60 * 60 * 1000 // 60 days
+        maxAge: 60 * 24 * 60 * 60 * 1000
       });
 
       res.json({
@@ -29,7 +35,7 @@ export const AuthController = {
         token
       });
     } catch (error) {
-      next(error); // Pass error to global error handler
+      next(error);
     }
   },
 
@@ -47,7 +53,7 @@ export const AuthController = {
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 24 * 60 * 60 * 1000 // 60 days
+        maxAge: 60 * 24 * 60 * 60 * 1000
       });
 
       res.status(201).json({
@@ -59,7 +65,7 @@ export const AuthController = {
         token
       });
     } catch (error) {
-      next(error); // Pass error to global error handler
+      next(error);
     }
   },
 
@@ -71,7 +77,7 @@ export const AuthController = {
       });
       res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
-      next(error); // Pass error to global error handler
+      next(error);
     }
   },
 
@@ -79,7 +85,7 @@ export const AuthController = {
     try {
       res.json(req.user);
     } catch (error) {
-      next(error); // Pass error to global error handler
+      next(error);
     }
   }
 };

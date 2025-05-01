@@ -2,6 +2,19 @@ import mongoose from "mongoose";
 import { baseSchemaOptions } from "./baseSchema.js";
 
 export const invitationSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    trim: true
+  },
+  lastName: {
+    type: String,
+    trim: true
+  },
+  role: {
+    type: String,
+    enum: ["admin", "member"],
+    default: "member"
+  },
   email: {
     type: String,
     required: true,
@@ -21,9 +34,8 @@ export const invitationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 604800 // 7 days in seconds
+    expires: 604800
   }
 }, baseSchemaOptions);
 
-// Ensure email is unique per admin
 invitationSchema.index({ email: 1, adminId: 1 }, { unique: true });

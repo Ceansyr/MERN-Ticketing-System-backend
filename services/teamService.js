@@ -3,77 +3,116 @@ import Invitation from "../models/Invitation.js";
 
 export const TeamService = {
   getTeamMembers: async (adminId) => {
-    return User.find({ adminId })
-      .select("-password")
-      .sort({ firstName: 1 });
+    const members = await User.find({ 
+      $or: [
+        { _id: adminId },
+        { adminId: adminId }
+      ]
+    }).select("-password");
+    
+    return members;
   },
 
-  inviteTeamMember: async (adminId, email) => {
-    // Check if user already exists
+  getTeamMemberById: async (id) => {
+    const member = await User.findById(id).select("-password");
+    
+    if (!member) throw new Error("Team member not found");
+    return member;
+  },
+
+  addTeamMember: async (memberData) => {
+    const tempPassword = Math.random().toString(36).slice(-8);
+    
+    const newMember = new User({
+      ...memberData,
+      password: tempPassword,
+      isTemporaryPassword: true
+    });
+    
+    return newMember.save();
+  },
+
+  updateTeamMember: async (id, updateData) => {
+    const member = await User.findByIdAndUpdate(
+      id, 
+      updateData, 
+      { new: true }
+    ).select("-password");
+    
+    if (!member) throw new Error("Team member not found");
+    return member;
+  },
+
+  deleteTeamMember: async (id) => {
+    const member = await User.findByIdAndDelete(id);
+    if (!member) throw new Error("Team member not found");
+    return member;
+  },
+
+  inviteTeamMember: async (adminId, email, firstName, lastName, role = "Member") => {
     const existingUser = await User.findOne({ email });
-    if (existingUser && existingUser.adminId && existingUser.adminId.equals(adminId)) {
-      throw new Error("User is already a member of your team");
+    if (existingUser) {
+      throw new Error("User with this email already exists");
     }
     
-    // Create invitation
     const invitation = new Invitation({
       email,
-      adminId
+      firstName,
+      lastName,
+      adminId,
+      role: role.toLowerCase(),
+      status: "pending"
     });
     
     return invitation.save();
   },
-
-  removeTeamMember: async (adminId, memberId) => {
-    const member = await User.findOne({ _id: memberId, adminId });
-    if (!member) {
-      throw new Error("Team member not found");
-    }
-    
-    // Remove admin association
-    member.adminId = null;
-    return member.save();
-  },
-
+  
   getPendingInvitations: async (adminId) => {
     return Invitation.find({ 
       adminId, 
       status: "pending" 
-    });
+    }).sort({ createdAt: -1 });
   },
-
+  
   checkInvitation: async (email) => {
-    return Invitation.findOne({ 
+    const invitation = await Invitation.findOne({ 
       email, 
       status: "pending" 
     }).populate("adminId", "firstName lastName email");
-  },
-
-  acceptInvitation: async (invitationId, userId) => {
-    const invitation = await Invitation.findById(invitationId)
-      .populate("adminId", "password");
     
     if (!invitation) {
-      throw new Error("Invitation not found or expired");
+      throw new Error("No pending invitation found for this email");
     }
     
-    // Update user with admin ID and inherit admin"s password
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new Error("User not found");
+    return invitation;
+  },
+  
+  acceptInvitation: async (invitationId, userData) => {
+    const invitation = await Invitation.findById(invitationId);
+    
+    if (!invitation) {
+      throw new Error("Invitation not found");
     }
     
-    user.adminId = invitation.adminId._id;
-    user.password = invitation.adminId.password; // Inherit admin"s password
+    if (invitation.status !== "pending") {
+      throw new Error("Invitation has already been used");
+    }
+    
+    const user = new User({
+      ...userData,
+      firstName: invitation.firstName || userData.firstName,
+      lastName: invitation.lastName || userData.lastName,
+      email: invitation.email,
+      adminId: invitation.adminId,
+      role: invitation.role || "Member"
+    });
+    
     await user.save();
     
-    // Mark invitation as accepted
     invitation.status = "accepted";
     await invitation.save();
     
-    return {
-      message: "Invitation accepted successfully. Please change your password for security.",
-      requirePasswordChange: true
-    };
+    return user;
   }
 };
+

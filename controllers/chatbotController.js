@@ -33,7 +33,6 @@ export const ChatbotController = {
     }
   },
   
-  // New endpoint for guest users
   createGuestUser: async (req, res) => {
     try {
       const { name, email, phone } = req.body;
@@ -42,7 +41,6 @@ export const ChatbotController = {
         return res.status(400).json({ message: "Name and email are required" });
       }
       
-      // Create a temporary guest token with user info
       const guestToken = jwt.sign(
         { name, email, phone, isGuest: true },
         process.env.JWT_SECRET,
@@ -58,8 +56,6 @@ export const ChatbotController = {
     }
   },
   
-  // Create ticket from guest chat
-  // Create ticket from guest chat
   createGuestTicket: async (req, res) => {
     try {
       const { title, description, contactInfo } = req.body;
@@ -68,19 +64,16 @@ export const ChatbotController = {
         return res.status(400).json({ message: "Title, description, and contact info are required" });
       }
       
-      // Find an admin to assign the ticket to
       const admin = await ChatbotService.findAvailableAdmin();
       
       if (!admin) {
         return res.status(500).json({ message: "No admin available to handle the ticket" });
       }
       
-      // Generate a unique ticket ID
       const year = new Date().getFullYear();
       const count = await TicketService.getTicketCount() + 1;
       const ticketId = `Ticket# ${year}-${count.toString().padStart(5, "0")}`;
       
-      // Create ticket with guest information
       const ticketData = {
         ticketId,
         title,
@@ -88,14 +81,13 @@ export const ChatbotController = {
         priority: "medium",
         status: "backlog",
         adminId: admin._id,
-        reporter: admin._id, // Using admin as reporter since guests don't have accounts
-        guestInfo: contactInfo, // Store guest contact info
+        reporter: admin._id,
+        guestInfo: contactInfo,
         source: "chat_widget"
       };
       
       const ticket = await TicketService.createTicket(ticketData);
       
-      // Create initial chat message
       await ChatbotService.saveGuestChatMessage(ticket._id, description, contactInfo);
       
       res.status(201).json({
@@ -106,9 +98,9 @@ export const ChatbotController = {
       res.status(400).json({ message: error.message });
     }
   },
+
   getSettings: async (req, res) => {
     try {
-      // Get settings for the current user/admin
       const settings = await ChatbotService.getSettings(req.user._id);
       res.json(settings);
     } catch (error) {
@@ -130,16 +122,15 @@ export const ChatbotController = {
       res.status(400).json({ message: error.message });
     }
   },
+
   getPublicSettings: async (req, res) => {
     try {
-      // Get the first admin's settings or default settings
       const admin = await ChatbotService.findAvailableAdmin();
       let settings;
       
       if (admin) {
         settings = await ChatbotService.getSettings(admin._id);
       } else {
-        // Return default settings if no admin is found
         settings = {
           headerColor: "#334758",
           backgroundColor: "#FFFFFF",
@@ -165,7 +156,7 @@ export const ChatbotController = {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
+  }
 };
 
 
