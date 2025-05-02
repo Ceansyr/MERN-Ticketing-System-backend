@@ -114,8 +114,8 @@ export const TicketController = {
       const ticket = await TicketService.getTicketById(req.params.id);
 
       if (
-        req.user.role === "admin" ||
-        (req.user.role === "member" && ticket.adminId.toString() !== req.user.adminId.toString())
+        req.user.role === "member" && 
+        ticket.adminId.toString() !== req.user.adminId.toString()
       ) {
         return res.status(403).json({ message: "Access denied" });
       }
