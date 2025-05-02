@@ -38,6 +38,14 @@ export const TeamController = {
       }
 
       const member = await TeamService.getTeamMemberById(req.params.id);
+      
+      if (!member) {
+        return res.status(404).json({ message: "Team member not found" });
+      }
+
+      if (!member.adminId) {
+        return res.status(400).json({ message: "Member has no associated admin" });
+      }
 
       if (member.adminId.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: "Access denied" });
