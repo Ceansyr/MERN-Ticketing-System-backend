@@ -3,7 +3,7 @@ import { TeamService } from "../services/teamService.js";
 export const TeamController = {
   getTeamMembers: async (req, res, next) => {
     try {
-      const adminId = req.user.role === "Admin" ? req.user._id : req.user.adminId;
+      const adminId = req.user.role === "admin" ? req.user._id : req.user.adminId;
       
       const members = await TeamService.getTeamMembers(adminId);
       res.json({ members });
