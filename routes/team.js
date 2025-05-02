@@ -8,6 +8,7 @@ applyCommonMiddleware(router);
 
 router.get("/members", TeamController.getTeamMembers);
 router.post("/invite", TeamController.inviteTeamMember);
+router.put("/members/:memberId", TeamController.updateTeamMember);
 router.delete("/members/:memberId", TeamController.removeTeamMember);
 router.get("/invitations", TeamController.getPendingInvitations);
 router.get("/invitations/:email", TeamController.checkInvitation);
