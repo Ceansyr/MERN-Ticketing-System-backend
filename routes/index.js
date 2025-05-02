@@ -14,7 +14,7 @@ router.use("/auth", authRoutes);
 router.use("/tickets", authMiddleware, ticketRoutes);
 router.use("/team", authMiddleware, teamRoutes);
 router.use("/analytics", authMiddleware, analyticsRoutes);
-router.use("/chatbot", authMiddleware, chatbotRoutes);
+router.use("/chatbot", chatbotRoutes); 
 router.use("/user", authMiddleware, userRoutes);
 
 export default router;
