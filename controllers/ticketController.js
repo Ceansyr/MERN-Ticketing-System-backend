@@ -3,25 +3,19 @@ import { ChatService } from "../services/chatService.js";
 
 export const TicketController = {
   getTickets: async (req, res, next) => {
-    const { page = 1, limit = 10, status, priority, assignee, source } = req.query;
+    const { page = 1, limit = 10, assignee } = req.query;
 
-    let filter = {};
+    const filter = {};
+    
     if (req.user.role === "admin") {
-      filter.adminId = req.user._id;
-    } else if (req.user.role === "member") {
-      filter.adminId = req.user.adminId;
     } else {
-      filter.reporter._id = req.user._id;
-    }
-
-    if (status) {
-      const statusArray = status.split(",");
-      filter.status = { $in: statusArray };
+      filter.$or = [
+        { assignedTo: req.user._id },
+        { adminId: req.user.adminId }
+      ];
     }
     
-    if (priority) filter.priority = priority;
     if (assignee) filter.assignee = assignee;
-    if (source) filter.source = source;
 
     try {
       const result = await TicketService.getTickets(filter, parseInt(page), parseInt(limit));
@@ -35,10 +29,7 @@ export const TicketController = {
     try {
       const ticket = await TicketService.getTicketById(req.params.id);
 
-      if (
-        (req.user.role === "admin" && ticket.reporter._id.toString() !== req.user._id.toString()) ||
-        (req.user.role === "member" && ticket.adminId.toString() !== req.user.adminId.toString())
-      ) {
+      if (req.user.role === "member" && ticket.adminId.toString() !== req.user.adminId.toString()) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -208,7 +199,7 @@ export const TicketController = {
       const ticket = await TicketService.getTicketById(req.params.id);
   
       if (
-        (req.user.role === "admin" && ticket.adminId.toString() !== req.user._id.toString()) ||
+        (req.user.role !== "admin" ) ||
         (req.user.role === "member" && ticket.adminId.toString() !== req.user.adminId.toString())
       ) {
         return res.status(403).json({ message: "Access denied" });

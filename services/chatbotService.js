@@ -101,25 +101,7 @@ export const ChatbotService = {
       let settings = await ChatbotSettings.findOne({ userId });
       
       if (!settings) {
-        return {
-          headerColor: "#334758",
-          backgroundColor: "#FFFFFF",
-          welcomeMessages: [
-            "How can I help you?",
-            "Ask me anything!"
-          ],
-          missedChatTimer: {
-            minutes: 12,
-            seconds: 0
-          },
-          introductionForm: {
-            enabled: true,
-            nameField: true,
-            phoneField: true,
-            emailField: true,
-            buttonText: "Thank You!"
-          }
-        };
+        settings = new ChatbotSettings({ userId });
       }
       
       return settings;

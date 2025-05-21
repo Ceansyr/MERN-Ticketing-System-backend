@@ -3,24 +3,20 @@ import User from "../models/User.js";
 import Chat from "../models/Chat.js";
 
 export const AnalyticsService = {
-  getTicketStats: async (adminId) => {
-    const totalTickets = await Ticket.countDocuments({ adminId });
+  getTicketStats: async () => {
+    const totalTickets = await Ticket.countDocuments({});
     const resolvedTickets = await Ticket.countDocuments({ 
-      adminId, 
       status: { $in: ["resolved", "closed"] } 
     });
     const unresolvedTickets = await Ticket.countDocuments({ 
-      adminId, 
       status: { $nin: ["resolved", "closed"] } 
     });
     
     const ticketsByStatus = await Ticket.aggregate([
-      { $match: { adminId: adminId } },
       { $group: { _id: "$status", count: { $sum: 1 } } }
     ]);
     
     const ticketsByPriority = await Ticket.aggregate([
-      { $match: { adminId: adminId } },
       { $group: { _id: "$priority", count: { $sum: 1 } } }
     ]);
     
@@ -39,8 +35,8 @@ export const AnalyticsService = {
     };
   },
 
-  getTeamPerformance: async (adminId) => {
-    const teamMembers = await User.find({ adminId }).select("_id firstName lastName");
+  getTeamPerformance: async () => {
+    const teamMembers = await User.find({}).select("_id firstName lastName adminId");
     
     const performance = await Promise.all(
       teamMembers.map(async (member) => {
@@ -65,9 +61,8 @@ export const AnalyticsService = {
     return performance;
   },
 
-  getResolutionTimeStats: async (adminId) => {
+  getResolutionTimeStats: async () => {
     const resolvedTickets = await Ticket.find({
-      adminId,
       status: { $in: ["resolved", "closed"] }
     });
     
@@ -95,8 +90,8 @@ export const AnalyticsService = {
     };
   },
   
-  getMissedChatsData: async (adminId) => {
-    const tickets = await Ticket.find({ adminId }).select("_id");
+  getMissedChatsData: async () => {
+    const tickets = await Ticket.find({}).select("_id");
     const ticketIds = tickets.map(ticket => ticket._id);
     
     const now = new Date();

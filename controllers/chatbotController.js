@@ -80,8 +80,6 @@ export const ChatbotController = {
         description,
         priority: "medium",
         status: "backlog",
-        adminId: admin._id,
-        reporter: admin._id,
         guestInfo: contactInfo,
         source: "chat_widget"
       };
@@ -126,32 +124,7 @@ export const ChatbotController = {
   getPublicSettings: async (req, res) => {
     try {
       const admin = await ChatbotService.findAvailableAdmin();
-      let settings;
-      
-      if (admin) {
-        settings = await ChatbotService.getSettings(admin._id);
-      } else {
-        settings = {
-          headerColor: "#334758",
-          backgroundColor: "#FFFFFF",
-          welcomeMessages: [
-            "How can I help you?",
-            "Ask me anything!"
-          ],
-          missedChatTimer: {
-            minutes: 12,
-            seconds: 0
-          },
-          introductionForm: {
-            enabled: true,
-            nameField: true,
-            phoneField: true,
-            emailField: true,
-            buttonText: "Thank You!"
-          }
-        };
-      }
-      
+      const settings = await ChatbotService.getSettings(admin?._id);
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: error.message });

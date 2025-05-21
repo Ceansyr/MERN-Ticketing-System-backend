@@ -37,6 +37,10 @@ export const ticketSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

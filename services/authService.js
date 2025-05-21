@@ -118,7 +118,14 @@ export const AuthService = {
       throw new Error("User already exists");
     }
     
-    const user = new User(userData);
+    const user = new User({
+      ...userData,
+      role: "admin" 
+    });
+
+    await user.save();
+    
+    user.adminId = user._id;
     await user.save();
     
     return user;
